@@ -1,158 +1,119 @@
+
 // const express = require('express');
 // const app = express();
 // const http = require('http');
 // const socketio = require('socket.io');
 // const path = require("path");
 // const server = http.createServer(app);
+// const cors = require('cors');
+// // This allows cross-origin requests
+
 
 // const io = socketio(server);
 
+// // Set up the view engine and static folder for serving front-end assets
 // app.set("view engine", "ejs");
 // app.use(express.static(path.join(__dirname, "public")));
+
+// app.use(cors());
+// app.use(express.json()); // middleware to parse JSON
+
+// app.post("/location", function (req, res) {
+//     const { lat, lng } = req.body;
+//     console.log("📥 GPS data received via POST:", lat, lng);
+
+//     // Optionally emit to socket
+//     io.emit("receive-location", {
+//         id: "esp8266",
+//         lat,
+//         lng,
+//         time: new Date().toLocaleTimeString(),
+//         speed: 0 // You can calculate real speed if needed
+//     });
+
+//     res.sendStatus(200);
+// });
+
 
 // io.on("connection", function (socket) {
 //     console.log("Client connected:", socket.id);
 
-//     // const sendFakeGPS = setInterval(() => {
-//     //     const fakeLat = 16.8541 + (Math.random() * 0.001); // Around Pune16.8541887
-//     //     const fakeLng = 74.5633 + (Math.random() * 0.001);
 
-//     //     io.emit('receive-location', {
-//     //         id: 'simulated-esp8266',
-//     //         lat: fakeLat,
-//     //         lng: fakeLng
-//     //     });
-//     // }, 3000);
 
-//     /// For Wifi location
-
-//     // socket.on("send-location", function (data) {
-//     //     io.emit("receive-location", { id: socket.id, ...data });
-//     // });
-
-//     io.on("send-location", function (data) {
+//     socket.on("send-location", (data) => {
 //         console.log("Received location:", data);
-
+//         console.log("sending..", {
+//             id: socket.id,
+//             lat: data.latitude,
+//             lng: data.longitude,
+//             time: new Date().toLocaleTimeString(), // example time
+//             speed: data.speed || 0 // ex
+//         })
+//         // Adding additional data (time, speed, etc.)
 //         io.emit("receive-location", {
 //             id: socket.id,
-//             latitude: data.latitude,
-//             longitude: data.longitude
+//             lat: data.lat,
+//             lng: data.lng,
+//             time: new Date().toLocaleTimeString(), // example time
+//             speed: data.speed || 0 // example speed, add logic to calculate if necessary
 //         });
 //     });
 
+
+
 //     socket.on('disconnect', () => {
 //         console.log('Client disconnected:', socket.id);
-//         // clearInterval(sendFakeGPS);
+//         // Notify all connected clients that a user has disconnected
 //         io.emit('user-disconnected', socket.id);
 //     });
 // });
 
-// // Route to render the page
+// // Route to render the map page
 // app.get("/", function (req, res) {
 //     res.render("index.ejs");
 // });
 
-// // Start server
+
+// // Start the server
 // server.listen(3000, () => {
 //     console.log("Server is running on http://localhost:3000");
 // });
 
-
-
-
-
-// // socket.on("send-location", function (data) {
-// //     io.emit("receive-location", { id: socket.id, ...data });
-// // });
-
-// // socket.on("disconnect", function () {
-// //     io.emit("user-disconnected", socket.id);
-// // });
-// // });
-
-
-
-// // app.get("/", function (req, res) {
-// //     res.render("index.ejs");
-// // })
-
-// // server.listen(3000);
-
-
-
 const express = require('express');
 const app = express();
-const http = require('http');
-const socketio = require('socket.io');
+app.set("io", null);
+const cors = require('cors');
 const path = require("path");
-const server = http.createServer(app);
 
-const io = socketio(server);
+app.use(cors());
+app.use(express.json());
 
-// Set up the view engine and static folder for serving front-end assets
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 
 
-app.use(express.json()); // middleware to parse JSON
 
-app.post("/location", function (req, res) {
+app.post("/location", (req, res) => {
     const { lat, lng } = req.body;
-    console.log("📥 GPS data received via POST:", lat, lng);
 
-    // Optionally emit to socket
-    io.emit("receive-location", {
-        id: "esp8266",
-        lat,
-        lng,
-        time: new Date().toLocaleTimeString(),
-        speed: 0 // You can calculate real speed if needed
-    });
+    console.log("📥 GPS data received:", lat, lng);
+
+    const io = req.app.get("io");
+    if (io) {
+        io.emit("receive-location", {
+            id: "esp8266",
+            lat: Number(lat),
+            lng: Number(lng),
+            time: new Date().toLocaleTimeString(),
+            speed: 0
+        });
+    }
 
     res.sendStatus(200);
 });
 
-
-io.on("connection", function (socket) {
-    console.log("Client connected:", socket.id);
-
-
-
-    socket.on("send-location", (data) => {
-        console.log("Received location:", data);
-        console.log("sending..", {
-            id: socket.id,
-            lat: data.latitude,
-            lng: data.longitude,
-            time: new Date().toLocaleTimeString(), // example time
-            speed: data.speed || 0 // ex
-        })
-        // Adding additional data (time, speed, etc.)
-        io.emit("receive-location", {
-            id: socket.id,
-            lat: data.lat,
-            lng: data.lng,
-            time: new Date().toLocaleTimeString(), // example time
-            speed: data.speed || 0 // example speed, add logic to calculate if necessary
-        });
-    });
-
-
-
-    socket.on('disconnect', () => {
-        console.log('Client disconnected:', socket.id);
-        // Notify all connected clients that a user has disconnected
-        io.emit('user-disconnected', socket.id);
-    });
-});
-
-// Route to render the map page
-app.get("/location", function (req, res) {
+app.get("/", (req, res) => {
     res.render("index.ejs");
 });
 
-
-// Start the server
-server.listen(3000, () => {
-    console.log("Server is running on http://localhost:3000/location");
-});
+module.exports = app;
