@@ -14,8 +14,6 @@ const stop = {
     lat: 16.8511318,
     lng:74.5727574
     
-
-
 };
 
 const stopMarker = L.marker([stop.lat, stop.lng])

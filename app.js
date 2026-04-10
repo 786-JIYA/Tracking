@@ -81,7 +81,7 @@
 
 const express = require('express');
 const app = express();
-app.set("io", null);
+//app.set("io", null);
 const cors = require('cors');
 const path = require("path");
 
@@ -93,13 +93,38 @@ app.use(express.static(path.join(__dirname, "public")));
 
 
 
-app.post("/location", (req, res) => {
+// app.post("/location", (req, res) => {
+//     const { lat, lng } = req.body;
+
+//     console.log("📥 GPS data received:", lat, lng);
+
+//     const io = req.app.get("io");
+//     if (io) {
+//         io.emit("receive-location", {
+//             id: "esp8266",
+//             lat: Number(lat),
+//             lng: Number(lng),
+//             time: new Date().toLocaleTimeString(),
+//             speed: 0
+//         });
+//     }
+
+//     res.sendStatus(200);
+// });
+
+//Bismillah HirRahmen Nir Raheem 
+app.post("/", (req, res) => {
     const { lat, lng } = req.body;
 
     console.log("📥 GPS data received:", lat, lng);
 
     const io = req.app.get("io");
+
+    console.log("IO OBJECT:", io); // 🔥 DEBUG
+
     if (io) {
+        console.log("📡 Emitting to frontend...");
+
         io.emit("receive-location", {
             id: "esp8266",
             lat: Number(lat),
@@ -107,10 +132,13 @@ app.post("/location", (req, res) => {
             time: new Date().toLocaleTimeString(),
             speed: 0
         });
+    } else {
+        console.log("❌ IO is NULL");
     }
 
     res.sendStatus(200);
 });
+
 
 app.get("/", (req, res) => {
     res.render("index.ejs");
