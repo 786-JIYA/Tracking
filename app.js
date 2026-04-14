@@ -197,6 +197,11 @@ const stops = {
         name: "Bus Stand",
         lat: 16.8400,
         lng: 74.5800
+    },
+    "dkte-college": {
+        name: "DKTE",
+        lat: 16.682125,
+        lng: 74.470407
     }
 };
 
