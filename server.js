@@ -1,3 +1,62 @@
+// const mongoose = require('mongoose');
+// const dotenv = require('dotenv');
+// const http = require('http');
+// const socketio = require('socket.io');
+
+
+// dotenv.config({ path: './config.env' });
+
+// console.log("RAW DATABASE ENV =", process.env.DATABASE);
+
+
+// const app = require('./app');
+// const server = http.createServer(app);
+// const io = socketio(server);
+
+// app.set("io",io);
+
+// app.set("view engine", "ejs");
+
+// // MongoDB connection
+// mongoose.connect(process.env.DB_URI)
+// .then(() => {
+//     console.log("✅ DB connection successful!");
+// })
+// .catch(err => {
+//     console.error("❌ DB connection failed:");
+//     console.error(err.message);
+//     process.exit(1);
+// });
+
+
+// // Socket.io logic
+// io.on("connection", (socket) => {
+//     console.log("Client connected:", socket.id);
+
+//     socket.on("send-location", (data) => {
+//         io.emit("receive-location", {
+//             id: socket.id,
+//             lat: data.lat,
+//             lng: data.lng,
+//             time: new Date().toLocaleTimeString(),
+//             speed: data.speed || 0
+//         });
+//         console.log("📍 Location received from server:", data);
+//     });
+
+//     socket.on("disconnect", () => {
+//         console.log("Client disconnected:", socket.id);
+//     });
+// });
+
+
+
+// const port = process.env.PORT || 3000;
+
+// server.listen(port, () => {
+//     console.log(`🚀 Server running on http://localhost:${port}`);
+// });
+
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const http = require('http');
@@ -5,32 +64,30 @@ const socketio = require('socket.io');
 
 dotenv.config({ path: './config.env' });
 
-console.log("RAW DATABASE ENV =", process.env.DATABASE);
-
+console.log("RAW DB URI =", process.env.DB_URI);
 
 const app = require('./app');
+
 const server = http.createServer(app);
 const io = socketio(server);
 
-app.set("io",io);
+app.set("io", io);
 
 // MongoDB connection
 mongoose.connect(process.env.DB_URI)
-.then(() => {
-    console.log("✅ DB connection successful!");
-})
+.then(() => console.log("✅ DB connection successful!"))
 .catch(err => {
-    console.error("❌ DB connection failed:");
-    console.error(err.message);
+    console.error("❌ DB connection failed:", err.message);
     process.exit(1);
 });
 
-
-// Socket.io logic
+// Socket logic
 io.on("connection", (socket) => {
     console.log("Client connected:", socket.id);
 
     socket.on("send-location", (data) => {
+        if (!data.lat || !data.lng) return;
+
         io.emit("receive-location", {
             id: socket.id,
             lat: data.lat,
@@ -38,15 +95,14 @@ io.on("connection", (socket) => {
             time: new Date().toLocaleTimeString(),
             speed: data.speed || 0
         });
-        console.log("📍 Location received from server:", data);
+
+        console.log("📍 Location received:", data);
     });
 
     socket.on("disconnect", () => {
         console.log("Client disconnected:", socket.id);
     });
 });
-
-
 
 const port = process.env.PORT || 3000;
 
