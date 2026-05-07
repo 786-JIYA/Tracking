@@ -218,7 +218,7 @@ const stops = {
         lat: 16.6788062,
         lng: 74.3949864
     },
-    "jaisingpur": {
+    "jaysingpur": {
         name: "Jaisingpur",
         lat: 16.7797356,
         lng: 74.5430497
