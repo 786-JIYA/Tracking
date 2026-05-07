@@ -75,11 +75,11 @@ app.set("io", io);
 
 // MongoDB connection
 mongoose.connect(process.env.DB_URI)
-.then(() => console.log("✅ DB connection successful!"))
-.catch(err => {
-    console.error("❌ DB connection failed:", err.message);
-    process.exit(1);
-});
+    .then(() => console.log("✅ DB connection successful!"))
+    .catch(err => {
+        console.error("❌ DB connection failed:", err.message);
+        process.exit(1);
+    });
 
 // Socket logic
 io.on("connection", (socket) => {
@@ -104,7 +104,7 @@ io.on("connection", (socket) => {
     });
 });
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 server.listen(port, () => {
     console.log(`🚀 Server running on http://localhost:${port}`);

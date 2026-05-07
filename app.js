@@ -203,6 +203,27 @@ const stops = {
         lat: 16.682125,
         lng: 74.470407
     }
+    , "sangli": {
+        name: "Sangli",
+        lat: 16.8542659,
+        lng: 74.5016984
+    },
+    "miraj": {
+        name: "Miraj",
+        lat: 16.8235543,
+        lng: 74.6043614
+    },
+    "ichalkaranji": {
+        name: "Ichalkaranji",
+        lat: 16.6788062,
+        lng: 74.3949864
+    },
+    "jaisingpur": {
+        name: "Jaisingpur",
+        lat: 16.7797356,
+        lng: 74.5430497
+    },
+
 };
 
 
